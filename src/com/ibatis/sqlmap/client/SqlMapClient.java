@@ -188,6 +188,7 @@ public interface SqlMapClient extends SqlMapExecutor, SqlMapTransactionManager {
    */
   public void flushDataCache(String cacheId);
 
+  public void loadPrimeCache() throws Exception;
   /**
    * Returns a generated implementation of a cusom mapper class as specified by the method
    * parameter.  The generated implementation will run mapped statements by matching the method

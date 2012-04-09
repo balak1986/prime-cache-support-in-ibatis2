@@ -28,15 +28,14 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class CachingStatement extends MappedStatement {
+    private MappedStatement statement;
+    protected CacheModel cacheModel;
 
-  private MappedStatement statement;
-  private CacheModel cacheModel;
-
-  public CachingStatement(MappedStatement statement, CacheModel cacheModel) {
-    this.statement = statement;
-    this.cacheModel = cacheModel;
-  }
-
+    public CachingStatement(MappedStatement statement, CacheModel cacheModel) {
+	this.statement = statement;
+	this.cacheModel = cacheModel;
+    }
+    
   public String getId() {
     return statement.getId();
   }
@@ -68,17 +67,23 @@ public class CachingStatement extends MappedStatement {
   }
 
   public Object executeQueryForObject(StatementScope statementScope, Transaction trans, Object parameterObject, Object resultObject)
-      throws SQLException {
-    CacheKey cacheKey = getCacheKey(statementScope, parameterObject);
-    cacheKey.update("executeQueryForObject");
-    Object object = cacheModel.getObject(cacheKey);
-    if (object == CacheModel.NULL_OBJECT){
-    	//	This was cached, but null
-    	object = null;
-    }else if (object == null) {
-       object = statement.executeQueryForObject(statementScope, trans, parameterObject, resultObject);
-       cacheModel.putObject(cacheKey, object);
-    }
+	    throws SQLException {
+	CacheKey cacheKey = getCacheKey(statementScope, parameterObject);
+	cacheKey.update("executeQueryForObject");
+	Object object = cacheModel.getObject(cacheKey);
+	if (object == CacheModel.NULL_OBJECT) {
+	    // This was cached, but null
+	    object = null;
+	} else if (object == null) {
+	    if (cacheModel.isPrimedCache()) {
+		((PrimeCachingStatement) this).prime(statementScope,
+			parameterObject, trans);
+	    } else {
+		object = statement.executeQueryForObject(statementScope, trans,
+			parameterObject, resultObject);
+		cacheModel.putObject(cacheKey, object);
+	    }
+	}
     return object;
   }
 

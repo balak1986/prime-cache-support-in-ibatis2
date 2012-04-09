@@ -54,6 +54,10 @@ public class SqlMapClientImpl implements SqlMapClient, ExtendedSqlMapClient {
     this.delegate = delegate;
   }
 
+  public void loadPrimeCache() throws SQLException {
+      getLocalSqlMapSession().loadPrimeCache();
+    }
+  
   public Object insert(String id, Object param) throws SQLException {
     return getLocalSqlMapSession().insert(id, param);
   }

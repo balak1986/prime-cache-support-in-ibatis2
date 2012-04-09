@@ -32,6 +32,7 @@ import com.ibatis.sqlmap.engine.mapping.result.ResultObjectFactory;
 import com.ibatis.sqlmap.engine.mapping.statement.InsertStatement;
 import com.ibatis.sqlmap.engine.mapping.statement.MappedStatement;
 import com.ibatis.sqlmap.engine.mapping.statement.PaginatedDataList;
+import com.ibatis.sqlmap.engine.mapping.statement.PrimeCachingStatement;
 import com.ibatis.sqlmap.engine.mapping.statement.SelectKeyStatement;
 import com.ibatis.sqlmap.engine.scope.StatementScope;
 import com.ibatis.sqlmap.engine.scope.SessionScope;
@@ -86,11 +87,20 @@ public class SqlMapExecutorDelegate {
     resultMaps = new HashMap();
     parameterMaps = new HashMap();
 
-    sqlExecutor = new SqlExecutor();
+    sqlExecutor = new DefaultSqlExecutor();
     typeHandlerFactory = new TypeHandlerFactory();
     dataExchangeFactory = new DataExchangeFactory(typeHandlerFactory);
   }
 
+  public void setCustomExecutor(String sqlExecutorClass) {
+    try {
+      Class factoryClass = Class.forName(sqlExecutorClass);
+      sqlExecutor = (SqlExecutor) factoryClass.newInstance();
+    } catch (Exception e) {
+      throw new SqlMapException("Error instantiating " + sqlExecutorClass + ". Please check the class given in properties file. Cause: " + e, e);
+    }
+  }
+  
   /**
    * DO NOT DEPEND ON THIS. Here to avoid breaking spring integration.
    * @deprecated
@@ -528,6 +538,18 @@ public class SqlMapExecutorDelegate {
     return object;
   }
 
+  public void loadPrimeCache(SessionScope sessionScope) throws SQLException{
+      Set mappedStatementsKeySet = mappedStatements.keySet();
+      
+      for (Object mappedSatementKey: mappedStatementsKeySet){
+	  Object mappedSatement = mappedStatements.get(mappedSatementKey);
+	  if (mappedSatement instanceof PrimeCachingStatement){
+	      PrimeCachingStatement pcs =  (PrimeCachingStatement) mappedSatement;
+	      String id =  pcs.getId();
+	      queryForObject(sessionScope, id, null);
+	  }
+      }
+  }
   /**
    * Execute a query for a list
    *

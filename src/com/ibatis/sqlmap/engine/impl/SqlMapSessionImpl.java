@@ -102,6 +102,10 @@ public class SqlMapSessionImpl implements SqlMapSession {
     return delete(id, null);
   }
 
+  public void loadPrimeCache() throws SQLException{
+      delegate.loadPrimeCache(sessionScope);
+  }
+  
   public Object queryForObject(String id, Object paramObject) throws SQLException {
     return delegate.queryForObject(sessionScope, id, paramObject);
   }

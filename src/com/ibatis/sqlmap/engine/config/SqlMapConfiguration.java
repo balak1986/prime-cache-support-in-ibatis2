@@ -137,9 +137,9 @@ public class SqlMapConfiguration {
     errorContext.setObjectId(null);
   }
 
-  public CacheModelConfig newCacheModelConfig(String id, CacheController controller, boolean readOnly, boolean serialize) {
-    return new CacheModelConfig(this, id, controller, readOnly, serialize);
-  }
+  public CacheModelConfig newCacheModelConfig(String id, CacheController controller, boolean readOnly, boolean serialize, boolean primedCache) {
+      return new CacheModelConfig(this, id, controller, readOnly, serialize, primedCache);
+    }
 
   public ParameterMapConfig newParameterMapConfig(String id, Class parameterClass) {
     return new ParameterMapConfig(this, id, parameterClass);
@@ -154,10 +154,10 @@ public class SqlMapConfiguration {
                                                         String resultMapName, String[] additionalResultMapNames,
                                                         Class resultClass, Class[] additionalResultClasses, 
                                                         String resultSetType, Integer fetchSize,
-                                                        boolean allowRemapping, Integer timeout, String cacheModelName,
-                                                        String xmlResultName) {
+                                                        boolean allowRemapping, Integer timeout, String cacheModelName, String primeCacheQuery,
+                                                        String keyProperty, String xmlResultName) {
     return new MappedStatementConfig(this, id, statement, processor, parameterMapName, parameterClass, resultMapName,
-        additionalResultMapNames, resultClass, additionalResultClasses, cacheModelName, resultSetType, fetchSize,
+        additionalResultMapNames, resultClass, additionalResultClasses, cacheModelName, primeCacheQuery, keyProperty, resultSetType, fetchSize,
         allowRemapping, timeout, defaultStatementTimeout, xmlResultName);
   }
 

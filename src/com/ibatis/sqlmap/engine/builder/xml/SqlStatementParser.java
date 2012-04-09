@@ -28,6 +28,8 @@ public class SqlStatementParser {
     String resultMapName = attributes.getProperty("resultMap");
     String resultClassName = attributes.getProperty("resultClass");
     String cacheModelName = state.applyNamespace(attributes.getProperty("cacheModel"));
+    String primeCacheQuery = attributes.getProperty("primeCacheQuery");
+    String keyProperty = attributes.getProperty("keyProperty");
     String xmlResultName = attributes.getProperty("xmlResultName");
     String resultSetType = attributes.getProperty("resultSetType");
     String fetchSize = attributes.getProperty("fetchSize");
@@ -69,11 +71,10 @@ public class SqlStatementParser {
     Integer timeoutInt = timeout == null ? null : new Integer(timeout);
     Integer fetchSizeInt = fetchSize == null ? null : new Integer(fetchSize);
     boolean allowRemappingBool = "true".equals(allowRemapping);
-
-    MappedStatementConfig statementConf = state.getConfig().newMappedStatementConfig(id, statement,
-        new XMLSqlSource(state, node), parameterMapName, parameterClass, resultMapName, additionalResultMapNames,
-        resultClass, additionalResultClasses, resultSetType, fetchSizeInt, allowRemappingBool, timeoutInt, cacheModelName,
-        xmlResultName);
+      MappedStatementConfig statementConf = state.getConfig().newMappedStatementConfig(id, statement,
+          new XMLSqlSource(state, node), parameterMapName, parameterClass, resultMapName, additionalResultMapNames,
+          resultClass, additionalResultClasses, resultSetType, fetchSizeInt, allowRemappingBool, timeoutInt, cacheModelName, primeCacheQuery,
+          keyProperty, xmlResultName);
 
     findAndParseSelectKey(node, statementConf);
   }

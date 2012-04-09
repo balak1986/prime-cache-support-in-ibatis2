@@ -91,6 +91,8 @@ public class SqlMapParser {
         Boolean readOnly = readOnlyAttr == null || readOnlyAttr.length() <= 0 ? null : new Boolean("true".equals(readOnlyAttr));
         String serializeAttr = attributes.getProperty("serialize");
         Boolean serialize = serializeAttr == null || serializeAttr.length() <= 0 ? null : new Boolean("true".equals(serializeAttr));
+        String primedCacheAttr = attributes.getProperty("primedCache");       
+	Boolean primedCache = primedCacheAttr == null || primedCacheAttr.length() <= 0 ? Boolean.FALSE : new Boolean("true".equals(primedCacheAttr));
         type = state.getConfig().getTypeHandlerFactory().resolveAlias(type);
         Class clazz = Resources.classForName(type);
         if (readOnly == null) {
@@ -99,7 +101,7 @@ public class SqlMapParser {
         if (serialize == null) {
           serialize = Boolean.FALSE;
         }
-        CacheModelConfig cacheConfig = state.getConfig().newCacheModelConfig(id, (CacheController) Resources.instantiate(clazz), readOnly.booleanValue(), serialize.booleanValue());
+        CacheModelConfig cacheConfig = state.getConfig().newCacheModelConfig(id, (CacheController) Resources.instantiate(clazz), readOnly.booleanValue(), serialize.booleanValue(), primedCache.booleanValue());
         state.setCacheConfig(cacheConfig);
       }
     });
@@ -243,6 +245,7 @@ public class SqlMapParser {
         String statementName = childAttributes.getProperty("select");
         String resultMapName = childAttributes.getProperty("resultMap");
         String callback = childAttributes.getProperty("typeHandler");
+        String notNullColumn = childAttributes.getProperty("notNullColumn");
 
         state.getConfig().getErrorContext().setMoreInfo("Check the result mapping property type or name.");
         Class javaClass = null;
@@ -275,7 +278,7 @@ public class SqlMapParser {
           }
         }
 
-        state.getResultConfig().addResultMapping(propertyName, columnName, columnIndex, javaClass, jdbcType, nullValue, statementName, resultMapName, typeHandlerImpl);
+        state.getResultConfig().addResultMapping(propertyName, columnName, columnIndex, javaClass, jdbcType, nullValue, notNullColumn, statementName, resultMapName, typeHandlerImpl);
       }
     });
 

@@ -10,13 +10,14 @@ public class CacheModelConfig {
   private ErrorContext errorContext;
   private CacheModel cacheModel;
 
-  CacheModelConfig(SqlMapConfiguration config, String id, CacheController controller, boolean readOnly, boolean serialize) {
+  CacheModelConfig(SqlMapConfiguration config, String id, CacheController controller, boolean readOnly, boolean serialize, boolean primedCache) {
     this.errorContext = config.getErrorContext();
     this.cacheModel = new CacheModel();
     SqlMapClientImpl client = config.getClient();
     errorContext.setActivity("building a cache model");
     cacheModel.setReadOnly(readOnly);
     cacheModel.setSerialize(serialize);
+    cacheModel.setPrimedCache(primedCache);    
     errorContext.setObjectId(id + " cache model");
     errorContext.setMoreInfo("Check the cache model type.");
     cacheModel.setId(id);

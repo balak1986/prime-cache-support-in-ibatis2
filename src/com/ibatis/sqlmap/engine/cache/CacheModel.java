@@ -59,6 +59,18 @@ public class CacheModel implements ExecuteListener {
 
   private String resource;
 
+  private boolean primedCache;
+
+  public boolean isPrimedCache() {
+	return primedCache;
+  }
+
+  public void setPrimedCache(boolean primedCache) {
+	this.primedCache = primedCache;
+	}
+  /*
+   * My ends here
+   */
   /**
    * Default constructor
    */

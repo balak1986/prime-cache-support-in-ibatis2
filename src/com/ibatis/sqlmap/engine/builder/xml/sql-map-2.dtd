@@ -134,6 +134,7 @@ id CDATA #REQUIRED
 type CDATA #REQUIRED
 readOnly (true | false) #IMPLIED
 serialize (true | false) #IMPLIED
+primedCache (true | false) #IMPLIED
 >
 <!--Defines the interval of when the cache will be flushed. There can be only one flush interval element and it
 can be set using hours, minutes, seconds or milliseconds.-->
@@ -243,6 +244,8 @@ parameterClass CDATA #IMPLIED
 resultMap CDATA #IMPLIED
 resultClass CDATA #IMPLIED
 cacheModel CDATA #IMPLIED
+primeCacheQuery CDATA #IMPLIED
+keyProperty CDATA #IMPLIED
 resultSetType (FORWARD_ONLY | SCROLL_INSENSITIVE | SCROLL_SENSITIVE) #IMPLIED
 fetchSize CDATA #IMPLIED
 xmlResultName CDATA #IMPLIED

@@ -27,19 +27,23 @@ public class MappedStatementConfig {
   private MappedStatement mappedStatement;
   private MappedStatement rootStatement;
 
-  MappedStatementConfig(SqlMapConfiguration config, String id, MappedStatement statement, SqlSource processor,
-                        String parameterMapName, Class parameterClass, String resultMapName,
-                        String[] additionalResultMapNames, Class resultClass, Class[] additionalResultClasses,
-                        String cacheModelName, String resultSetType, Integer fetchSize, boolean allowRemapping,
-                        Integer timeout, Integer defaultStatementTimeout, String xmlResultName) {
-    this.errorContext = config.getErrorContext();
-    this.client = config.getClient();
-    SqlMapExecutorDelegate delegate = client.getDelegate();
-    this.typeHandlerFactory = config.getTypeHandlerFactory();
-    errorContext.setActivity("parsing a mapped statement");
-    errorContext.setObjectId(id + " statement");
-    errorContext.setMoreInfo("Check the result map name.");
-    if (resultMapName != null) {
+    MappedStatementConfig(SqlMapConfiguration config, String id,
+	    MappedStatement statement, SqlSource processor,
+	    String parameterMapName, Class parameterClass,
+	    String resultMapName, String[] additionalResultMapNames,
+	    Class resultClass, Class[] additionalResultClasses,
+	    String cacheModelName, String primeCacheQuery, String keyProperty,
+	    String resultSetType, Integer fetchSize, boolean allowRemapping,
+	    Integer timeout, Integer defaultStatementTimeout,
+	    String xmlResultName) {
+	this.errorContext = config.getErrorContext();
+	this.client = config.getClient();
+	SqlMapExecutorDelegate delegate = client.getDelegate();
+	this.typeHandlerFactory = config.getTypeHandlerFactory();
+	errorContext.setActivity("parsing a mapped statement");
+	errorContext.setObjectId(id + " statement");
+	errorContext.setMoreInfo("Check the result map name.");
+	if (resultMapName != null) {
       statement.setResultMap(client.getDelegate().getResultMap(resultMapName));
       if (additionalResultMapNames != null) {
         for (int i = 0; i < additionalResultMapNames.length; i++) {
@@ -56,7 +60,7 @@ public class MappedStatementConfig {
     if (resultSetType != null) {
       if ("FORWARD_ONLY".equals(resultSetType)) {
         statement.setResultSetType(new Integer(ResultSet.TYPE_FORWARD_ONLY));
-      } else if ("SCROLL_INSENSITIVE".equals(resultSetType)) {
+	    } else if ("SCROLL_INSENSITIVE".equals(resultSetType)) {
         statement.setResultSetType(new Integer(ResultSet.TYPE_SCROLL_INSENSITIVE));
       } else if ("SCROLL_SENSITIVE".equals(resultSetType)) {
         statement.setResultSetType(new Integer(ResultSet.TYPE_SCROLL_SENSITIVE));
@@ -106,14 +110,20 @@ public class MappedStatementConfig {
     statement.setSqlMapClient(client);
     if (cacheModelName != null && cacheModelName.length() > 0 && client.getDelegate().isCacheModelsEnabled()) {
       CacheModel cacheModel = client.getDelegate().getCacheModel(cacheModelName);
-      mappedStatement = new CachingStatement(statement, cacheModel);
-    } else {
-      mappedStatement = statement;
+	    if (primeCacheQuery != null) {
+		MappedStatement primedCacheMappedStatement = delegate
+			.getMappedStatement(primeCacheQuery);
+		mappedStatement = new PrimeCachingStatement(statement, cacheModel,
+			primedCacheMappedStatement, keyProperty);
+	    } else {
+		mappedStatement = new CachingStatement(statement, cacheModel);
+	    }
+	} else {
+	    mappedStatement = statement;
+	}
+	rootStatement = statement;
+	delegate.addMappedStatement(mappedStatement);
     }
-    rootStatement = statement;
-    delegate.addMappedStatement(mappedStatement);
-  }
-
   public void setSelectKeyStatement(SqlSource processor, String resultClassName, String keyPropName, boolean runAfterSQL, String type) {
     if (rootStatement instanceof InsertStatement) {
       InsertStatement insertStatement = ((InsertStatement) rootStatement);
