@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.ibatis</groupId>
+  <artifactId>ibatis-sqlmap</artifactId>
+  <packaging>jar</packaging>
+  <version>SNAPSHOT</version>
+  <name>iBATIS SQL Maps</name>
+  <url>http://ibatis.apache.org</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses> 
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/ibatis/</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/ibatis/</developerConnection>
+    <tag>HEAD</tag>
+    <url>http://svn.apache.org/repos/asf/ibatis/</url>
+  </scm>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>tlc</id>
+      <name>TLC Repository</name>
+      <url>http://commons.ucalgary.ca/pub/m2</url>
+    </pluginRepository>
+  </pluginRepositories>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
+      <version>1.0.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>opensymphony</groupId>
+      <artifactId>oscache</artifactId>
+      <version>2.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib-full</artifactId>
+      <version>2.0.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging-api</artifactId>
+      <version>1.0.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.9</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <version>1.2.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <!-- TEST DEPENDENCIES -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>1.8.0.7</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <version>10.2.2.0</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <finalName>${project.artifactId}-${project.version}-r${buildNumber}</finalName>
+    <sourceDirectory>${basedir}/src</sourceDirectory>
+    <testSourceDirectory>${basedir}/test</testSourceDirectory>
+    <resources>
+      <resource>
+        <directory>${basedir}/src</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>${basedir}/test</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </testResource>
+    </testResources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+		  <source>1.5</source>
+		  <target>1.5</target>
+        </configuration>
+      </plugin>    
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <index>false</index>
+            <manifest>
+              <addClasspath>false</addClasspath>
+            </manifest>
+            <manifestEntries>
+              <!--
+              Need a better way to specify a current date.
+              This is a problem in maven and the fix is on it's
+              way but not quite here http://jira.codehaus.org/browse/MNG-1832
+              current workaround is to add  -DbuildDate=`date +%Y-%m-%d` to
+              the call to maven.
+
+              Unix Example:
+              mvn -DbuildDate=`date +%Y-%m-%d` clean install
+
+              Windows Example:
+              none
+              -->
+              <Build-On>${env.buildDate}</Build-On>
+            </manifestEntries>
+            <manifestSections>
+              <manifestSection>
+                <name>com/ibatis</name>
+                <manifestEntries>
+                  <Implementation-Title>iBATIS Data Mapper</Implementation-Title>
+                  <Implementation-Version>${project.version}-r${buildNumber}</Implementation-Version>
+                  <Implementation-Vendor>Apache Software Foundation</Implementation-Vendor>
+                </manifestEntries>
+              </manifestSection>
+            </manifestSections>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>bin</descriptorRef>
+            <descriptorRef>src</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <configuration>
+          <attach>true</attach>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <doCheck>false</doCheck>
+          <doUpdate>false</doUpdate>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <templateDirectory>${basedir}</templateDirectory>
+          <template>build/maven/maven-site.vm</template>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>changelog-maven-plugin</artifactId>
+        <configuration>
+          <type>date</type>
+          <dates>
+            <date implementation="java.lang.String">2006-12-01</date>
+            <!--
+            Need a better way to specify a current date.
+            This is a problem in maven and the fix is on it's
+            way but not quite here http://jira.codehaus.org/browse/MNG-1832
+            current workaround is to add  -DbuildDate=`date +%Y-%m-%d` to
+            the call to maven.
+
+            Unix Example:
+            mvn -DbuildDate=`date +%Y-%m-%d` clean install
+
+            Windows Example:
+            none
+            -->
+            <date implementation="java.lang.String">${env.buildDate}</date>
+          </dates>
+          <dateFormat>yyyy-MM-dd</dateFormat>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+  <!--
+   <distributionManagement>
+     <repository>
+       <uniqueVersion></uniqueVersion>
+       <id></id>
+       <name></name>
+       <url></url>
+     </repository>
+   </distributionManagement>
+   -->
+</project>
+ 
